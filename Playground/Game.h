@@ -17,9 +17,12 @@ public:
 	TowerManager towerManager;
 
 	sf::Texture groundTexture;
+	sf::Texture towerTexture;
+	sf::Texture enemyTexture;
+	sf::Texture testingTex;
+
 	sf::Sprite testingSprite;
 	sf::Text text;
-	sf::Texture testingTex;
 	sf::Font font;
 	sf::CircleShape circle;
 
@@ -44,13 +47,15 @@ public:
 		font.loadFromFile("arial.ttf");
 		//font.loadFromFile("arial.ttf");
 		testingTex.loadFromFile("Texture/testingTexture.png");
+		towerTexture.loadFromFile("Texture/TowerTexture.png");
+		enemyTexture.loadFromFile("Texture/EnemyTexture.png");
 
 		tileSizex = 40, tileSizey = 40, textureSizex = 25, textureSizey = 25;
 
 		tileCreate();
 
-		enemyManager = EnemyManager(getEnemies, groundTexture, tileSizex, tileSizey);
-		towerManager = TowerManager(getEnemies, tile, groundTexture, textureSizex, textureSizey);
+		enemyManager = EnemyManager(getEnemies, enemyTexture, tileSizex, tileSizey);
+		towerManager = TowerManager(getEnemies, tile, towerTexture, groundTexture, textureSizex, textureSizey);
 		inputManager = InputManager(towerManager, enemyManager, tile, text,  tileSizex, tileSizey, textureSizex, textureSizey, testingTex, font);
 		enemyManager.rerunAlgorithm(tile, 0, 0, 19, 19);
 		tile[19][19].sprite.setColor(sf::Color::Red);
@@ -65,15 +70,15 @@ public:
 	}
 
 	virtual void draw(sf::RenderWindow &window)
-	{	
+	{		
 		for(int x = 0; x < tileSizex; x++)
 			for(int y = 0; y < tileSizey; y++)
 			{
 				window.draw(tile[x][y]);
 			}		
 		window.draw(camera);		
-		window.draw(enemyManager);
 		window.draw(towerManager);
+		window.draw(enemyManager);
 		window.draw(inputManager);
 		window.draw(text);
 		window.draw(circle);

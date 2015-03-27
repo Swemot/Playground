@@ -10,7 +10,7 @@ public:
 	std::vector<Tile> pathList;
 	std::vector<Tile> openList;
 	std::vector<Tile> closedList;	
-	sf::Texture texture;
+	sf::Texture enemyTexture;
 	int stopX, stopY, tileSizex, tileSizey;
 
 	bool algoSearch;
@@ -22,21 +22,24 @@ public:
 	{
 	}
 
-	EnemyManager::EnemyManager(std::deque<Enemy> &incEnemyList, sf::Texture texture, int tileSizex, int tileSizey)
-		: texture(texture), tileSizex(tileSizex), tileSizey(tileSizey), algoSearch(false), pathFound(false), enemies(&incEnemyList), pathExist(false) {
-		//enemies = &incEnemyList;
+	EnemyManager::EnemyManager(std::deque<Enemy> &incEnemyList, sf::Texture incTexture, int tileSizex, int tileSizey)
+		: enemyTexture(incTexture), tileSizex(tileSizex), tileSizey(tileSizey), algoSearch(false), pathFound(false), enemies(&incEnemyList), pathExist(false) {
 	}
 
 	void update(sf::Time &dt){
 		for(std::deque<Enemy>::iterator it=enemies->begin(); it!=enemies->end();){
-			if(NewCycle(it))
-				if(PathListIsEmpty(it))
+			//IF currMovementCycle  == endMovementCycle
+			if(NewCycle(it)){
+				//IF pathlist is empty
+				if(PathListIsEmpty(it)){
 					EnemyGetNewPath(it);
-				else
+				} else {
 					EnemyMovePath(it);					
-			if(FinishedCycle(it) || EnemyHealthGone(it))
+				}
+			}
+			if(FinishedCycle(it) || EnemyHealthGone(it)){
 				it->destroyed =  true;
-			else{
+			} else {	
 				EnemyMoveSprite(it);
 			}
 			it++;
@@ -48,7 +51,6 @@ public:
 			else
 				it++;
 		}
-
 	}
 
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const 
@@ -59,10 +61,20 @@ public:
 		}
 	}
 
-	void spawnEnemy()
+	void SpawnEnemy(int incEnemyNumber)
 	{
 		if(pathExist)
-			(*enemies).push_back(Enemy(texture, 95, pathList));
+			switch(incEnemyNumber){
+				case Enemy0:{
+					enemies->push_back(Enemy(enemyTexture, 100, pathList, 3, incEnemyNumber));
+					break;
+				}
+				case Enemy1:{
+					enemies->push_back(Enemy(enemyTexture, 50, pathList, 6, incEnemyNumber));
+					break;
+				}
+			}
+			
 	}
 
 	void EnemyGetNewPath(std::deque<Enemy>::iterator incIterator){
@@ -70,47 +82,39 @@ public:
 		incIterator->currentNode = incIterator->pathList[incIterator->pathList.size()-1];
 		incIterator->pathList.pop_back();
 
-		incIterator->tempVec.x = incIterator->currPath.x / incIterator->endMovementCycle;
-		incIterator->tempVec.y = incIterator->currPath.y / incIterator->endMovementCycle;
+		incIterator->tempVec = sf::Vector2f(incIterator->currPath.x / incIterator->endMovementCycle, incIterator->currPath.y / incIterator->endMovementCycle);
+
 		incIterator->currMovementCycle = 0;
 	}
-
 	void EnemyMovePath(std::deque<Enemy>::iterator incIterator){
-		incIterator->currPath = incIterator->currentNode.position - incIterator->sprite.getPosition() ;
-		incIterator->tempVec.x = incIterator->currPath.x / incIterator->endMovementCycle;
-		incIterator->tempVec.y = incIterator->currPath.y / incIterator->endMovementCycle;
+		incIterator->currPath = incIterator->currentNode.position - incIterator->sprite.getPosition();
+		incIterator->tempVec = sf::Vector2f(incIterator->currPath.x / incIterator->endMovementCycle, incIterator->currPath.y / incIterator->endMovementCycle);
 	}
-
 	bool NewCycle(std::deque<Enemy>::iterator incIterator){
 		if(incIterator->currMovementCycle == incIterator->endMovementCycle)
 			return true;
 		return false;
 	}
-
 	bool PathListIsEmpty(std::deque<Enemy>::iterator incIterator){
 		if(incIterator->pathList.empty())
 			return false;
 		return true;		
 	}
-
 	bool FinishedCycle(std::deque<Enemy>::iterator incIterator){
 		if(incIterator->currMovementCycle == incIterator->endMovementCycle * 2)
 			return true;
 		return false;
 	}
-
 	bool EnemyHealthGone(std::deque<Enemy>::iterator incIterator){
 		if(incIterator->health <= 0)
 			return true;
 		return false;
 	}
-
 	void EnemyMoveSprite(std::deque<Enemy>::iterator incIterator){
 		incIterator->currMovementCycle++;
 		incIterator->position += incIterator->tempVec;
 		incIterator->sprite.move(incIterator->tempVec);
 	}
-
 	void aStar()
 	{
 		while(true)
@@ -284,5 +288,7 @@ public:
 	}
 
 private:
+
+	enum EnemyNumber { Enemy0, Enemy1, Enemy2};
 
 };

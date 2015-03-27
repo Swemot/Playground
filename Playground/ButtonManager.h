@@ -11,35 +11,48 @@ private:
 	sf::Sprite sprite;
 
 public:
-	std::vector<Button> buttons;
+	std::vector<Button> towerButtons;
+	std::vector<Button> enemyButtons;
 	ButtonManager(){
 	}
 
-	ButtonManager(sf::Texture &incTexture, sf::Font &incFont){
-		std::string stringArr[] = {"Tower1", "Tower2", "Tower3"};
+	ButtonManager(sf::Texture &incTexture, sf::Font &incFont){		
 		
-		buttons = std::vector<Button>((sizeof(stringArr)/sizeof(*stringArr)));
+		std::string towerNames[] = {"Tower1", "Tower2", "Tower3"};
+		towerButtons = std::vector<Button>((sizeof(towerNames)/sizeof(*towerNames)));
 
-		for(int i = 0; i < (sizeof(stringArr)/sizeof(*stringArr)); i++){
-			buttons[i].text.setString(stringArr[i]);
-			buttons[i].text.setFont(incFont);
-			buttons[i].text.setCharacterSize(20);
-			buttons[i].text.setStyle(sf::Text::Bold);
-			buttons[i].text.setColor(sf::Color::Green);
-			buttons[i].text.setPosition((150 * i + 18.0f), (750 + 35.0f));
+		std::string enemyNames[] = {"Enemy1", "Enemy2", "Enemy3"};
+		enemyButtons = std::vector<Button>((sizeof(enemyNames)/sizeof(*enemyNames)));
 
-			buttons[i].sprite.setTexture(incTexture);
-			buttons[i].sprite.setPosition(sf::Vector2f(150 * i , 750));
-			buttons[i].buttonNumber = i;  
+
+		for(int i = 0; i < (sizeof(towerNames)/sizeof(*towerNames)); i++){
+			towerButtons[i].text.setString(towerNames[i]);
+			towerButtons[i].text.setFont(incFont);
+			towerButtons[i].text.setCharacterSize(20);
+			towerButtons[i].text.setStyle(sf::Text::Bold);
+			towerButtons[i].text.setColor(sf::Color::Black);
+			towerButtons[i].text.setPosition((150 * i + 18.0f), (750 + 35.0f));
+			towerButtons[i].sprite.setTexture(incTexture);
+			towerButtons[i].sprite.setPosition(sf::Vector2f(150 * i , 750));
+			towerButtons[i].buttonNumber = i;  
+
+			enemyButtons[i].text.setString(enemyNames[i]);
+			enemyButtons[i].text.setFont(incFont);
+			enemyButtons[i].text.setCharacterSize(20);
+			enemyButtons[i].text.setStyle(sf::Text::Bold);
+			enemyButtons[i].text.setColor(sf::Color::Black);
+			enemyButtons[i].text.setPosition((590 + (150 * i) + 18.0f), (750 + 35.0f));
+			enemyButtons[i].sprite.setTexture(incTexture);
+			enemyButtons[i].sprite.setPosition(sf::Vector2f(600 + (150 * i) , 750));
+			enemyButtons[i].buttonNumber = i;
 		}
 	}
-
-	void update(sf::Clock dt){		
-	}
-
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const 
 	{		
-		for(Button btn : buttons){
+		for(Button btn : towerButtons){
+			btn.draw(target, states);
+		}
+		for(Button btn : enemyButtons){
 			btn.draw(target, states);
 		}
 	}

@@ -59,11 +59,16 @@ public:
 			if(windowBounds(worldPos))			
 			{
 				bool insideButton = false;
-				for(Button btn : buttonManager.buttons){
+				for(Button btn : buttonManager.towerButtons){
 					if(btn.sprite.getGlobalBounds().contains(worldPos)){
 						towerManager->AddTower(btn.buttonNumber, targetTowerPos);
 						(*tile)[xPos][yPos].sprite.setColor(sf::Color::Black);
 						insideButton = true;
+					}
+				}
+				for(Button btn : buttonManager.enemyButtons){
+					if(btn.sprite.getGlobalBounds().contains(worldPos)){						
+						enemyManager->SpawnEnemy(btn.buttonNumber);
 					}
 				}
 				if(!insideButton){
@@ -74,41 +79,15 @@ public:
 					targetTowerPos = mousePos;
 					(*tile)[xPos][yPos].sprite.setColor(sf::Color::Green);
 				}
-				//PlaceTile();
 				MouseLeftButtonPressed = true;
 			}
-			/*for(Button btn : buttons){
-				if(btn.sprite.getGlobalBounds().contains(worldPos)){
-					btn.text.setString(std::to_string(worldPos.x) + " " + std::to_string(worldPos.y));
-				}
-			}*/
 		}
 		if (!sf::Mouse::isButtonPressed(sf::Mouse::Left) && MouseLeftButtonPressed)
 			MouseLeftButtonPressed = false;
-		/*
-		if (sf::Mouse::isButtonPressed(sf::Mouse::Right) && !MouseRightButtonPressed)
-		{
-			if(windowBounds(worldPos))
-			{
-				enemyManager->rerunAlgorithm(*tile, 0, 0, (int)mousePos.x, (int)mousePos.y);
-			}
-			MouseRightButtonPressed = true;
-		}
-
-		if (!sf::Mouse::isButtonPressed(sf::Mouse::Right) && MouseRightButtonPressed)
-			MouseRightButtonPressed = false;
-		*/
-		if(sf::Keyboard::isKeyPressed(sf::Keyboard::F) && !wasButtonPressed)
-		{
-			enemyManager->spawnEnemy();
-			wasButtonPressed = true;
-		}
-		if(!sf::Keyboard::isKeyPressed(sf::Keyboard::F) && wasButtonPressed)
-			wasButtonPressed = false;
 
 		if(sf::Keyboard::isKeyPressed(sf::Keyboard::U))
 		{
-			//ResetTiles();
+			towerManager->ClearTowers();
 		}
 	}
 
@@ -116,28 +95,6 @@ public:
 	{
 		buttonManager.draw(target, states);
 	}
-
-	/*
-	void ResetTiles(){
-		for(Tower t : towerManager->towers){
-			(*tile)[t.x][t.y].tower = false;				
-		}
-
-		towerManager->towers.clear();
-	}
-	
-	void PlaceTile(){
-		(*tile)[(int)mousePos.x][(int)mousePos.y].sprite.setColor(sf::Color::Green);
-		(*tile)[(int)mousePos.x][(int)mousePos.y].wall = true;
-		towerManager->towers[(int)mousePos.x][(int)mousePos.y].tower = true;
-
-		for(int i = 0; i < enemyManager->pathList.size(); i++){
-			if(enemyManager->pathList[i].x == (int)mousePos.x && enemyManager->pathList[i].y == (int)mousePos.y){
-				enemyManager->rerunAlgorithm(*tile, 0, 0, 19, 19);
-			}
-		}
-	}*/
-
 	sf::Vector2i getPixelPos(sf::RenderWindow &window){
 		return sf::Mouse::getPosition(window);
 	}

@@ -13,16 +13,16 @@ public:
 	//std::vector<std::vector<Tower>> towers;
 	std::vector<Tower> towers;
 	std::deque<Enemy> *getEnemies;
-	sf::Texture groundTexture;
+	sf::Texture towerTexture, shootTexture;
 	std::list<Shoot> shoots;
 	Enemy *temp;
 	TowerManager()
 	{
 	}
 
-	TowerManager(std::deque<Enemy> &incEnemyList, std::vector<std::vector<Tile>>& incTile, sf::Texture &incgroundTexture, int textureSizex, int textureSizey) 
-		: groundTexture(incgroundTexture), textureSizex(textureSizex), 
-		textureSizey(textureSizey), getEnemies(&incEnemyList)
+	TowerManager(std::deque<Enemy> &incEnemyList, std::vector<std::vector<Tile>>& incTile, sf::Texture &incTowerTexture, sf::Texture &incShootTexture, int textureSizex, int textureSizey) 
+		: towerTexture(incTowerTexture), textureSizex(textureSizex), 
+		textureSizey(textureSizey), getEnemies(&incEnemyList), shootTexture(incShootTexture)
 	{
 	}
 
@@ -65,7 +65,7 @@ public:
 							shoots.push_back(
 								Shoot(*temp, 
 								tower.position, 
-								groundTexture, 
+								shootTexture, 
 								tower.velocity));
 							tower.elapsedTime = sf::seconds(0);
 						}
@@ -73,9 +73,9 @@ public:
 				}else{
 					tower.enemy = nullptr;
 					tower.haveEnemy = false;
-				}
-				tower.elapsedTime += dt;
+				}				
 			}
+			tower.elapsedTime += dt;
 		}
 		
 		for(std::list<Shoot>::iterator it=shoots.begin(); it!=shoots.end();){
@@ -92,10 +92,19 @@ public:
 	
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const 
 	{		
+		for(auto &t : towers)
+		{
+			target.draw(t.circle);
+			target.draw(t.sprite);			
+		}
 		for(auto &s : shoots)
 		{
 			target.draw(s.sprite);
 		}
+	}
+
+	void ClearTowers(){
+		towers.clear();
 	}
 
 	void AddTower(int incTowerNumber, sf::Vector2f incMousePos){
@@ -105,15 +114,33 @@ public:
 				sf::Vector2f position = sf::Vector2f((int)incMousePos.x * textureSizex, (int)incMousePos.y * textureSizex );
 				float velocity = 5.0f;
 				float shootTimer = 0.1f;
-				towers.push_back(Tower(towerRadius, position, velocity, shootTimer, incMousePos));
+				towers.push_back(Tower(
+					towerRadius, 
+					position, 
+					velocity, 
+					shootTimer, 
+					incMousePos, 
+					towerTexture, 
+					incTowerNumber,
+					textureSizex, 
+					textureSizey));
 				break;
 			}
 			case Tower1:{
 				float towerRadius = 300;
 				sf::Vector2f position = sf::Vector2f((int)incMousePos.x * textureSizex, (int)incMousePos.y * textureSizex );
-				float velocity = 7.5f;
-				float shootTimer = 1.0f;
-				towers.push_back(Tower(towerRadius, position, velocity, shootTimer, incMousePos));
+				float velocity = 10.0f;
+				float shootTimer = 0.75f;
+				towers.push_back(Tower(
+					towerRadius,
+					position, 
+					velocity, 
+					shootTimer, 
+					incMousePos, 
+					towerTexture, 
+					incTowerNumber,
+					textureSizex, 
+					textureSizey));
 				break;
 			}case Tower2:{
 
